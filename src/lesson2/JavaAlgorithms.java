@@ -3,7 +3,13 @@ package lesson2;
 import kotlin.NotImplementedError;
 import kotlin.Pair;
 
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Scanner;
 import java.util.Set;
+
+
 
 @SuppressWarnings("unused")
 public class JavaAlgorithms {
@@ -31,8 +37,28 @@ public class JavaAlgorithms {
      *
      * В случае обнаружения неверного формата файла бросить любое исключение.
      */
-    static public Pair<Integer, Integer> optimizeBuyAndSell(String inputName) {
-        throw new NotImplementedError();
+    // Трудоемкость = O(N^2)
+    // Ресурсоемкость = O(N)
+    static public Pair<Integer, Integer> optimizeBuyAndSell(String inputName) throws IOException {
+        FileReader fileReader = new FileReader(inputName);
+        Scanner sc = new Scanner(fileReader);
+        ArrayList<Integer> list =new ArrayList<>();
+        Pair<Integer, Integer> res = new Pair<>(0, 0);
+        while (sc.hasNext()) {
+            list.add(Integer.valueOf(sc.nextLine()));
+        }
+        fileReader.close();
+        sc.close();
+        int maxDeff = 0;
+        for (int buy = 0; buy < list.size() - 1; buy++) {
+            for (int sale = buy + 1; sale < list.size(); sale++) {
+                if (list.get(sale) - list.get(buy) > maxDeff ) {
+                    maxDeff = list.get(sale) - list.get(buy);
+                    res = new Pair<>(buy + 1, sale + 1);
+                }
+            }
+        }
+        return res;
     }
 
     /**
@@ -84,8 +110,14 @@ public class JavaAlgorithms {
      * Общий комментарий: решение из Википедии для этой задачи принимается,
      * но приветствуется попытка решить её самостоятельно.
      */
+    // Трудоемкость = O(N), где N = menNumber
+    // Ресурсоемкость = O(1)
     static public int josephTask(int menNumber, int choiceInterval) {
-        throw new NotImplementedError();
+        int res = 0;
+        for (int i = 1; i <= menNumber; i++) {
+            res = (res + choiceInterval) % i;
+        }
+        return res + 1;
     }
 
     /**
@@ -113,8 +145,27 @@ public class JavaAlgorithms {
      * Справка: простым считается число, которое делится нацело только на 1 и на себя.
      * Единица простым числом не считается.
      */
+    //Трудоемкость = O(N * sqrt(N)), где N = limit
+    //Ресурсоемкость = O(1)
     static public int calcPrimesNumber(int limit) {
-        throw new NotImplementedError();
+        int res = 0;
+        if (limit <= 1)
+            return 0;
+        for (int n = 1; n <= limit; n++)
+            if (isPrime(n))
+                res++;
+        return res;
+    }
+
+    private static boolean isPrime(int n) {
+        if (n < 2) return false;
+        if (n == 2 || n == 3) return true;
+        if (n % 2 == 0 || n % 3 == 0) return false;
+        int sqrtN = (int)Math.sqrt(n) + 1;
+        for (int i = 6; i <= sqrtN; i += 6) {
+            if  (n % (i - 1) == 0 || n % (i + 1) == 0) return false;
+        }
+        return true;
     }
 
     /**

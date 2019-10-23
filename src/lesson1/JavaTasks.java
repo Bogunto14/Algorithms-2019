@@ -2,6 +2,12 @@ package lesson1;
 
 import kotlin.NotImplementedError;
 
+
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.*;
+
 @SuppressWarnings("unused")
 public class JavaTasks {
     /**
@@ -98,8 +104,26 @@ public class JavaTasks {
      * 99.5
      * 121.3
      */
-    static public void sortTemperatures(String inputName, String outputName) {
-        throw new NotImplementedError();
+    // Трудоемкость = O(N * log(N))
+    // Ресурсоемкость = O(N)
+    static public void sortTemperatures(String inputName, String outputName) throws IOException {
+        FileReader fileReader = new FileReader(inputName);
+        FileWriter writer = new FileWriter(outputName);
+        Scanner sc = new Scanner(fileReader);
+        ArrayList<Double> list = new ArrayList<>();
+        double temperatures;
+        while (sc.hasNext()) {
+            temperatures = Double.parseDouble(sc.nextLine()) ;
+            if (temperatures >= -273.0 && temperatures <= 500.0)
+                list.add(temperatures);
+        }
+        sc.close();
+        fileReader.close();
+        Collections.sort(list);
+        for (Double i : list)
+            writer.write(i + "\n");
+        writer.close();
+
     }
 
     /**
@@ -149,7 +173,13 @@ public class JavaTasks {
      *
      * Результат: second = [1 3 4 9 9 13 15 20 23 28]
      */
+    //Трудоёмкость = O(N * log(N))
+    //Ресурсоемкость = O(1)
     static <T extends Comparable<T>> void mergeArrays(T[] first, T[] second) {
-        throw new NotImplementedError();
+        for (int i = 0; i <= first.length; i++)
+         if (second[i] == null){
+            second[i] = first[i];
+        }
+        Arrays.sort(second);
     }
 }

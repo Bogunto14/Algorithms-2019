@@ -72,10 +72,43 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
      * Удаление элемента в дереве
      * Средняя
      */
+    //Трудоемкость = O(n)
+    //Ресурсоемкость = O(n)
     @Override
     public boolean remove(Object o) {
-        // TODO
-        throw new NotImplementedError();
+        if (root == null) return false;
+        root = delete(root, (T) o);
+        size--;
+        return true;
+    }
+
+    private Node<T> delete(Node<T> node, T z) {
+        if (z.compareTo(node.value) < 0)
+            node.left = delete(node.left, z);
+        else {
+            if (z.compareTo(node.value) > 0) {
+                node.right = delete(node.right, z);
+            } else {
+                if (node.left != null && node.right != null) {
+                    Node<T> min = new Node<>(minimum(node.right).value);
+                    min.left = node.left;
+                    min.right = node.right;
+                    node = min;
+                    node.right = delete(node.right, node.value);
+                } else {
+                    if (node.left != null)
+                        node = node.left;
+                     else  node = node.right;
+                }
+            }
+        }
+        return node;
+    }
+
+    private Node<T> minimum(Node<T> node) {
+        if (node.left == null)
+            return node;
+        return minimum(node.left);
     }
 
     @Override
@@ -111,37 +144,69 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
         private BinaryTreeIterator() {
             // Добавьте сюда инициализацию, если она необходима
         }
+        private Node<T> current = null;
 
         /**
          * Проверка наличия следующего элемента
          * Средняя
          */
+        //Трудоемкость = O(n)
+        //Ресурсоемкость = O(1)
         @Override
         public boolean hasNext() {
-            // TODO
-            throw new NotImplementedError();
+            return findNext() != null;
         }
+
 
         /**
          * Поиск следующего элемента
          * Средняя
          */
+        //Трудоемкость = O(n)
+        //Ресурсоемкость = O(1)
         @Override
         public T next() {
-            // TODO
-            throw new NotImplementedError();
+            current = findNext();
+            if (current != null) return current.value;
+            return null;
         }
+
+        private Node<T> findNext() {
+            if (root == null) return null;
+            Node<T> successor = null;
+            if (current != null) {
+                Node<T> nowRoot = root;
+                while (nowRoot != null) {
+                    if (nowRoot.value.compareTo(current.value) > 0) {
+                        successor = nowRoot;
+                        nowRoot = nowRoot.left;
+                    } else {
+                        nowRoot = nowRoot.right;
+                    }
+                }
+            } else {
+                successor = root;
+                while (successor.left != null) {
+                    successor = successor.left;
+                }
+            }
+            return successor;
+        }
+
 
         /**
          * Удаление следующего элемента
          * Сложная
          */
+        //Трудоемкость = O(n)
+        //Ресурсоемкость = O(1)
         @Override
         public void remove() {
-            // TODO
-            throw new NotImplementedError();
+            root = delete(root, current.value);
+            size--;
         }
     }
+
 
     @NotNull
     @Override

@@ -1,9 +1,9 @@
 package lesson5;
 
 import kotlin.NotImplementedError;
+import lesson5.impl.GraphBuilder;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @SuppressWarnings("unused")
 public class JavaGraphTasks {
@@ -37,6 +37,8 @@ public class JavaGraphTasks {
         throw new NotImplementedError();
     }
 
+
+
     /**
      * Минимальное остовное дерево.
      * Средняя
@@ -65,8 +67,31 @@ public class JavaGraphTasks {
      * |
      * J ------------ K
      */
+    // Трудоемкость = O(V*E), где V - количество вершин, E - количество ребер.
+    // Ресурсоемкость = O(V)
     public static Graph minimumSpanningTree(Graph graph) {
-        throw new NotImplementedError();
+        GraphBuilder result = new GraphBuilder();
+        HashMap<Graph.Vertex, Integer> map = new HashMap<>();
+        int i = 0;
+        for (Graph.Vertex vertex : graph.getVertices()){
+            map.put(result.addVertex(vertex.getName()), i);
+            i++;
+        }
+        for (Graph.Edge edge : graph.getEdges()){
+            Graph.Vertex first = edge.getBegin();
+            Graph.Vertex second = edge.getEnd();
+            if (!map.get(first).equals(map.get(second))){
+                int o = map.get(first);
+                int n = map.get(second);
+                result.addConnection(first, second, 0);
+                for (Map.Entry<Graph.Vertex, Integer> entry : map.entrySet()){
+                    if (entry.getValue().equals(o)) {
+                        entry.setValue(n);
+                    }
+                }
+            }
+        }
+        return result.build();
     }
 
     /**
@@ -119,7 +144,35 @@ public class JavaGraphTasks {
      *
      * Ответ: A, E, J, K, D, C, H, G, B, F, I
      */
+    // Трудоемкость = O(V!), где V - количество вершин.
+    // Ресурсоемкость = O(V!)
     public static Path longestSimplePath(Graph graph) {
-        throw new NotImplementedError();
+        Set<Graph.Vertex> set = graph.getVertices();
+        LinkedList<Path> list = new LinkedList<>();
+
+        if (set.isEmpty())
+            return new Path();
+
+        for (Graph.Vertex vertex : set) {
+            list.add(new Path(vertex));
+        }
+        Path longestPath = null;
+        int lengthPath = 0;
+        while (!list.isEmpty()) {
+            Path currentPath = list.remove();
+            if (currentPath.getLength() > lengthPath) {
+                longestPath = currentPath;
+                lengthPath = longestPath.getLength();
+                if (longestPath.getLength() == set.size())
+                    break;
+            }
+            List<Graph.Vertex> vertices = currentPath.getVertices();
+            for (Graph.Vertex neighbour : graph.getNeighbors(vertices.get(vertices.size() - 1))) {
+                if (!currentPath.contains(neighbour)) {
+                    list.add(new Path(currentPath, graph, neighbour));
+                }
+            }
+        }
+        return longestPath;
     }
 }
